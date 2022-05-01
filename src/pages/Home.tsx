@@ -3,11 +3,12 @@ import googleIconImage from '../assets/images/google-icon.svg'
 import illustrationImage from '../assets/images/illustration.svg'
 
 import '../styles/auth.scss';
-import {Button} from "../components/Button";
+import {Button} from "../components/button";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks/useAuth";
 import {FormEvent, useState} from "react";
-import {getDatabase, ref, get} from "firebase/database";
+import {get} from "firebase/database";
+import {makeFirebaseRef} from "../hooks/makeFirebaseRef";
 
 export function Home() {
     const navigate = useNavigate();
@@ -29,10 +30,15 @@ export function Home() {
             return;
         }
 
-        const roomRef = await get(ref(getDatabase(), `rooms/${roomCode}`));
+        const roomRef = await get(makeFirebaseRef(`rooms/${roomCode}`));
 
         if (!roomRef.exists()) {
             alert("Room doesn't exists.");
+            return;
+        }
+
+        if (roomRef.val().endedAt) {
+            alert('Room already closed.')
             return;
         }
 
